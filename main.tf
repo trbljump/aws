@@ -8,15 +8,23 @@ terraform {
 }
 
 provider "aws" {
-  shared_config_files      = ["~/.aws/config"]
-  shared_credentials_files = ["~/.aws/credentials"]
-
   default_tags {
     tags = {
-      Environment = "Test"
-      Name        = "Terraformed"
+      "terraformed" = "True"
     }
   }
 }
 
+/*
+module "machine" {
+  source = "./Machines"
 
+  ssh_key_id = aws_key_pair.jmp.id
+  instance_ami = var.test_instance_ami
+  subnet_id = aws_subnet.machines.id
+}
+
+output "public_ip" {
+  value = module.machine.public_ip
+}
+*/

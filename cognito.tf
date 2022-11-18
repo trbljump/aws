@@ -24,8 +24,6 @@ resource "aws_cognito_user_pool_domain" "test" {
   user_pool_id = aws_cognito_user_pool.test.id
 }
 
-
-
 resource "aws_cognito_user_pool_client" "test" {
   name                                 = "newflask"
   generate_secret                      = true
@@ -46,7 +44,7 @@ output "oidc_client_id" {
     value = aws_cognito_user_pool_client.test.id
 }
 
-output "cognito_url" {
+output "cognito_endpoint" {
     value = aws_cognito_user_pool.test.endpoint
 }
 

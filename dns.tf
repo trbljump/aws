@@ -73,15 +73,3 @@ resource "aws_route53_record" "fleurdelys_deux_ch_TXT" {
   allow_overwrite = true
 }
 
-resource "aws_route53_record" "fleurdelys_deux_ch_www_CNAME" {
-  zone_id = aws_route53_zone.fleurdelys-deux_ch.zone_id
-  name = "www.fleurdelys-deux.ch."
-  type = "CNAME"
-  ttl = 300
-  records = [
-    "fleurdelys-deux.ch.",
-  ]
-  allow_overwrite = true
-}
-
-
