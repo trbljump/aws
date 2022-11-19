@@ -19,6 +19,25 @@ resource "aws_cognito_identity_provider" "google" {
   }
 }
 
+resource "aws_cognito_identity_provider" "gitlab" {
+  user_pool_id  = aws_cognito_user_pool.test.id
+  provider_name = "Gitlab"
+  provider_type = "OIDC"
+
+  provider_details = {
+    authorize_scopes = "email openid profile"
+    client_id        = "af0840cc1f83270aca12c078e33dc1267692a22e832d0236ee506b61d08887a4"
+    client_secret    = "9da91cc14cdf32afbd7e653860678b971abc3b411b98fe42cb125086a0ffcdab"
+    attributes_request_method = "POST"
+    oidc_issuer = "https://gitlab.com"
+  }
+  
+  attribute_mapping = {
+    email    = "email"
+    username = "sub"
+  }
+}
+
 resource "aws_cognito_user_pool_domain" "test" {
   domain       = "jmpool2"
   user_pool_id = aws_cognito_user_pool.test.id
@@ -32,7 +51,10 @@ resource "aws_cognito_user_pool_client" "test" {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows                  = ["code", "implicit"]
   allowed_oauth_scopes                 = ["email", "openid", "profile"]
-  supported_identity_providers         = ["COGNITO", aws_cognito_identity_provider.google.provider_name]
+  supported_identity_providers         = ["COGNITO", 
+                                          aws_cognito_identity_provider.google.provider_name,
+                                          aws_cognito_identity_provider.gitlab.provider_name
+                                          ]
 }
 
 output "oidc_client_secret" {
