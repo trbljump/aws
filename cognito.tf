@@ -31,6 +31,30 @@ resource "aws_cognito_identity_provider" "gitlab" {
     attributes_request_method = "POST"
     oidc_issuer = "https://gitlab.com"
   }
+
+  attribute_mapping = {
+    email    = "email"
+    username = "sub"
+  }
+}
+
+resource "aws_cognito_identity_provider" "github" {
+  user_pool_id  = aws_cognito_user_pool.test.id
+  provider_name = "Github"
+  provider_type = "OIDC"
+
+  provider_details = {
+    attributes_request_method = "POST",
+    attributes_url = "https://api.github.com/user",
+    attributes_url_add_attributes = "false",
+    authorize_scopes = "openid profile email",
+    authorize_url = "https://github.com/login/oauth/authorize",
+    client_id = "Iv1.14ee0c058ab5b11a",
+    client_secret = "ecddc40a6d31782992bfb56144242688261962c6",
+    jwks_uri = "https://github.com",
+    oidc_issuer = "https://github.com",
+    token_url = "https://github.com/login/oauth/access_token"
+  }
   
   attribute_mapping = {
     email    = "email"
@@ -53,7 +77,8 @@ resource "aws_cognito_user_pool_client" "test" {
   allowed_oauth_scopes                 = ["email", "openid", "profile"]
   supported_identity_providers         = ["COGNITO", 
                                           aws_cognito_identity_provider.google.provider_name,
-                                          aws_cognito_identity_provider.gitlab.provider_name
+                                          aws_cognito_identity_provider.gitlab.provider_name,
+                                          aws_cognito_identity_provider.github.provider_name
                                           ]
 }
 
