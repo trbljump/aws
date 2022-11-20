@@ -1,5 +1,8 @@
 resource "aws_route53_zone" "karbonak_link" {
     name = "karbonak.link"
+    lifecycle {
+      prevent_destroy = true
+    }
 }
 
 resource "aws_route53domains_registered_domain" "karbonak_link" {
@@ -8,6 +11,9 @@ resource "aws_route53domains_registered_domain" "karbonak_link" {
 
 resource "aws_route53_zone" "jacot-descombes_net"  {
   name = "jacot-descombes.net"
+    lifecycle {
+      prevent_destroy = true
+    }
 }
 
 resource "aws_route53domains_registered_domain" "jacot-descombes_net" {
@@ -16,6 +22,9 @@ resource "aws_route53domains_registered_domain" "jacot-descombes_net" {
 
 resource "aws_route53_zone" "fleurdelys-deux_ch" {
     name = "fleurdelys-deux.ch"
+    lifecycle {
+      prevent_destroy = true
+    }
 }
 
 

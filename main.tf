@@ -32,13 +32,13 @@ provider "aws" {
   }
 }
 
-data "aws_caller_identity" "current" {}
 
 resource "random_pet" "this" {
   length = 2
 }
 
 module "lambda" {
+  count = 0
   source = "github.com/terraform-aws-modules/terraform-aws-lambda"
   function_name = "${random_pet.this.id}-lambda"
   handler       = "hello.lambda_handler"
@@ -68,8 +68,4 @@ output "public_ip" {
 
 output "lambda_url" {
   value = toset(module.lambda[*].lambda_function_url)
-}
-
-output "caller" {
-  value = data.aws_caller_identity.current.arn
 }
