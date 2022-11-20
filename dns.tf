@@ -2,9 +2,22 @@ resource "aws_route53_zone" "karbonak_link" {
     name = "karbonak.link"
 }
 
+resource "aws_route53domains_registered_domain" "karbonak_link" {
+  domain_name = "karbonak.link"
+}
+
+resource "aws_route53_zone" "jacot-descombes_net"  {
+  name = "jacot-descombes.net"
+}
+
+resource "aws_route53domains_registered_domain" "jacot-descombes_net" {
+  domain_name = "jacot-descombes.net"
+}
+
 resource "aws_route53_zone" "fleurdelys-deux_ch" {
     name = "fleurdelys-deux.ch"
 }
+
 
 resource "aws_route53_record" "karbonak_link_MX" {
   zone_id = aws_route53_zone.karbonak_link.zone_id

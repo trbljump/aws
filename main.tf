@@ -38,10 +38,6 @@ resource "random_pet" "this" {
   length = 2
 }
 
-resource "random_pet" "that" {
-  length = 2
-}
-
 module "lambda" {
   source = "github.com/terraform-aws-modules/terraform-aws-lambda"
   function_name = "${random_pet.this.id}-lambda"
@@ -76,8 +72,4 @@ output "lambda_url" {
 
 output "caller" {
   value = data.aws_caller_identity.current.arn
-}
-
-output "dummy" {
-  value = random_pet.that.id
 }
