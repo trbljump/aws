@@ -1,8 +1,13 @@
 import json
+import datetime
 
 def lambda_handler(event, context):
-    # TODO implement
+    result = {
+        'message': 'Hello, Lambda World',
+        'stamp' : str(datetime.datetime.now()),
+    }
+
     return {
         'statusCode': 200,
-        'body': json.dumps('Hello from Lambda, modified!')
+        'body': json.dumps(result)
     }

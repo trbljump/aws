@@ -1,4 +1,10 @@
 terraform {
+  backend "s3" {
+    bucket = "thirty-tf-state"
+    key    = "test/terraform.tfstate"
+    region = "eu-west-1"
+
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -26,87 +32,30 @@ provider "aws" {
   }
 }
 
-
-module "lambda" {
-  source = "./Lambda"
-providers = {
-  aws = aws.ohio
- }
-}
+data "aws_caller_identity" "current" {}
 
 resource "random_pet" "this" {
   length = 2
 }
 
-resource "aws_iam_policy" "lambda_policy" {
-  name = "policy-${random_pet.this.id}"
-  path        = "/"
-  description = "Execution policy for ${random_pet.this.id}"
-
-  policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:us-east-2:036964189205:*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": [
-                "arn:aws:logs:us-east-2:036964189205:log-group:/aws/lambda/${random_pet.this.id}:*"
-            ]
-        }
-    ]
-  })
+resource "random_pet" "that" {
+  length = 2
 }
 
-resource aws_iam_role "lambda_role" {
-  name = "role-${random_pet.this.id}"
-  assume_role_policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "lambda.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-  })
-  managed_policy_arns=  [
-    aws_iam_policy.lambda_policy.arn
-  ]
-  provider = aws.ohio
+module "lambda" {
+  source = "github.com/terraform-aws-modules/terraform-aws-lambda"
+  function_name = "${random_pet.this.id}-lambda"
+  handler       = "hello.lambda_handler"
+  runtime       = "python3.9"
+  publish       = true
+
+  source_path = "${path.module}/python"
+  hash_extra  = "yo1"
+  create_lambda_function_url = true
+  providers = {
+    aws = aws.ohio
+  }
 }
-
-resource "aws_iam_role_policy_attachment" "attachment" {
-  role       = aws_iam_role.lambda_role.name
-  policy_arn = aws_iam_policy.lambda_policy.arn
-}
-
-
-resource "aws_lambda_function" "test_lambda" {
-  provider = aws.ohio
-  function_name = random_pet.this.id
-  role = aws_iam_role.lambda_role.arn
-  runtime = "python3.9"
-  filename = "python/package.zip"
-  handler = "hello.lambda_handler"
-  publish = true
-}
-
-resource "aws_lambda_function_url" "test_lambda" {
-  provider = aws.ohio
-  function_name      = aws_lambda_function.test_lambda.function_name
-  authorization_type = "NONE"
-}
-
 
 module "machine" {
   source = "./Machines"
@@ -122,5 +71,13 @@ output "public_ip" {
 }
 
 output "lambda_url" {
-  value = aws_lambda_function_url.test_lambda.function_url
+  value = toset(module.lambda[*].lambda_function_url)
+}
+
+output "caller" {
+  value = data.aws_caller_identity.current.arn
+}
+
+output "dummy" {
+  value = random_pet.that.id
 }
