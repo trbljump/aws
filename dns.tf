@@ -4,14 +4,42 @@ resource "aws_route53_zone" "karbonak_link" {
 
 resource "aws_route53domains_registered_domain" "karbonak_link" {
   domain_name = "karbonak.link"
+
+  name_server {
+    name = aws_route53_zone.karbonak_link.name_servers[0]
+  }
+  name_server {
+    name = aws_route53_zone.karbonak_link.name_servers[1]
+  }
+  name_server {
+    name = aws_route53_zone.karbonak_link.name_servers[2]
+  }
+  name_server {
+    name = aws_route53_zone.karbonak_link.name_servers[3]
+  }
 }
 
 resource "aws_route53_zone" "jacot-descombes_net"  {
   name = "jacot-descombes.net"
+
+
 }
 
 resource "aws_route53domains_registered_domain" "jacot-descombes_net" {
   domain_name = "jacot-descombes.net"
+
+  name_server {
+    name = aws_route53_zone.jacot-descombes_net.name_servers[0]
+  }
+  name_server {
+    name = aws_route53_zone.jacot-descombes_net.name_servers[1]
+  }
+  name_server {
+    name = aws_route53_zone.jacot-descombes_net.name_servers[2]
+  }
+  name_server {
+    name = aws_route53_zone.jacot-descombes_net.name_servers[3]
+  }
 }
 
 resource "aws_route53_zone" "fleurdelys-deux_ch" {
@@ -52,6 +80,17 @@ resource "aws_route53_record" "karbonak_link_autodiscover_CNAME" {
   ]
   allow_overwrite = true
 }
+
+/*
+resource "aws_route53_record" "karbonak_link_puppet_A" {
+  zone_id = aws_route53_zone.karbonak_link.zone_id
+  name = "puppet.karbonak.link."
+  type = "A"
+  ttl = 300
+  records = module.machine[*].public_ip
+  allow_overwrite = true
+}
+*/
 
 resource "aws_route53_record" "fleurdelys_deux_ch_A" {
   zone_id = aws_route53_zone.fleurdelys-deux_ch.zone_id

@@ -1,10 +1,10 @@
 data "aws_ami" "amazonlinux" {
   most_recent = true
-  owners = ["137112412989"] # Amazon
-  name_regex = "^al2022-ami-minimal.*"
+  owners = ["136693071363"] # Amazon
+  name_regex = "^debian-11-amd64.*"
   filter {
     name   = "architecture"
-    values = ["arm64"]
+    values = ["x86_64"]
   }
 }
 resource "random_pet" "this" {
@@ -13,7 +13,7 @@ resource "random_pet" "this" {
 
 resource "aws_instance" "this" {
     ami = data.aws_ami.amazonlinux.image_id
-    instance_type = "t4g.medium"
+    instance_type = "t3.micro"
     key_name = var.ssh_key_id
     subnet_id = var.subnet_id
     security_groups = [var.security_group]
@@ -21,9 +21,12 @@ resource "aws_instance" "this" {
     user_data = <<EOF
 #!/bin/sh
 
-yum update --assumeyes
-hostnamectl hostname ${random_pet.this.id} --transient
-hostnamectl hostname ${random_pet.this.id} --static
+apt update && apt dist-upgrade --yes
+cd /tmp
+wget https://apt.puppetlabs.com/puppet7-release-bullseye.deb
+dpkg -i puppet7-release-bullseye.deb 
+apt update
+apt install puppetserver --yes
 EOF
 }
 
