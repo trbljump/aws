@@ -1,13 +1,19 @@
- resource "aws_vpc" "production" {
-  cidr_block = "10.0.0.0/16"
-  enable_dns_hostnames  = true
+resource "aws_default_vpc" "default" {
   tags = {
-    Name = "Production VPC"
+    Name = "Default VPC"
   }
 }
 
-resource "aws_default_security_group" "production" {
-  vpc_id = aws_vpc.production.id
+data "aws_internet_gateway" "default" {
+  filter {
+    name = "attachment.vpc-id"
+    values = [aws_default_vpc.default.id]
+  }
+}
+
+resource "aws_security_group" "all_open" {
+  vpc_id = aws_default_vpc.default.id
+  name = "all-open"
 
   ingress {
     protocol  = "-1"
@@ -24,19 +30,12 @@ resource "aws_default_security_group" "production" {
   }
 }
 
-resource "aws_internet_gateway" "production" {
-  vpc_id = aws_vpc.production.id
-  tags = {
-    Name = "Production Gateway"
-  }
-}
-
 resource "aws_default_route_table" "production" {
-  default_route_table_id = aws_vpc.production.default_route_table_id
+  default_route_table_id = aws_default_vpc.default.default_route_table_id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.production.id
+    gateway_id = data.aws_internet_gateway.default.id
   }
 
   tags = {
@@ -45,12 +44,9 @@ resource "aws_default_route_table" "production" {
 }
 
 resource "aws_subnet" "machines" {
-  vpc_id                  = aws_vpc.production.id
-  cidr_block              = "10.0.1.0/24"
+  vpc_id                  = aws_default_vpc.default.id
+  cidr_block              = "172.31.32.0/20"
   map_public_ip_on_launch = true
-
-  depends_on = [aws_internet_gateway.production]
-
   tags = {
     Name = "Machines subnet"
   }

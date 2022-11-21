@@ -16,6 +16,7 @@ resource "aws_instance" "this" {
     instance_type = "t4g.medium"
     key_name = var.ssh_key_id
     subnet_id = var.subnet_id
+    security_groups = [var.security_group]
     user_data_replace_on_change = true
     user_data = <<EOF
 #!/bin/sh

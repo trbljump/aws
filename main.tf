@@ -60,6 +60,7 @@ module "machine" {
   ssh_key_id = aws_key_pair.jmp.id
   instance_ami = var.test_instance_ami
   subnet_id = aws_subnet.machines.id
+  security_group = aws_security_group.all_open.id
 }
 
 output "public_ip" {
