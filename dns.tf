@@ -82,9 +82,9 @@ resource "aws_route53_record" "karbonak_link_autodiscover_CNAME" {
 }
 
 /*
-resource "aws_route53_record" "karbonak_link_puppet_A" {
+resource "aws_route53_record" "karbonak_link_scim_A" {
   zone_id = aws_route53_zone.karbonak_link.zone_id
-  name = "puppet.karbonak.link."
+  name = "scim.karbonak.link."
   type = "A"
   ttl = 300
   records = module.machine[*].public_ip

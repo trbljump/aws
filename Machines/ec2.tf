@@ -13,7 +13,7 @@ resource "random_pet" "this" {
 
 resource "aws_instance" "this" {
     ami = data.aws_ami.amazonlinux.image_id
-    instance_type = "t3.micro"
+    instance_type = "t3.nano"
     key_name = var.ssh_key_id
     subnet_id = var.subnet_id
     security_groups = [var.security_group]
@@ -22,11 +22,6 @@ resource "aws_instance" "this" {
 #!/bin/sh
 
 apt update && apt dist-upgrade --yes
-cd /tmp
-wget https://apt.puppetlabs.com/puppet7-release-bullseye.deb
-dpkg -i puppet7-release-bullseye.deb 
-apt update
-apt install puppetserver --yes
 EOF
 }
 
